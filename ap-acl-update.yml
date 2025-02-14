@@ -1,0 +1,37 @@
+---
+- name: Configure Ubiquiti LiteBeam with MAC ACL
+  hosts: litebeam_hosts
+  gather_facts: no
+  vars:
+    ansible_user: admin
+    ansible_password: FutureBroadbandAS400497
+    ansible_ssh_pass: FutureBroadbandAS400497
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    default_system_cfg_path: /tmp/system.cfg  # Update this path as it is on the device
+  
+  tasks:
+    - name: Extract MAC address
+      raw: "ifconfig eth0 | grep 'HWaddr' | awk '{print $5}'"
+      register: mac_address_output
+
+    - name: Display the MAC address
+      debug:
+        msg: "MAC address is {{ mac_address_output.stdout.strip() }}"
+
+    - name: Read default system.cfg using raw command
+      raw: "cat {{ default_system_cfg_path }}"
+      register: default_system_cfg_output
+
+    - name: Append new MAC ACL entry directly on the device
+      raw: |
+        echo -e "\nwireless.1.mac_acl.80.mac={{ mac_address_output.stdout.strip() }}" >> {{ default_system_cfg_path }}
+        echo "wireless.1.mac_acl.80.status=enabled" >> {{ default_system_cfg_path }}
+
+    - name: Apply the updated system.cfg
+      raw: "cfgmtd -w -p /etc/"
+
+    - name: Save the configuration to persistent storage
+      raw: "cfgmtd -w -p /etc/"
+
+    - name: Reboot the device
+      raw: "reboot"
