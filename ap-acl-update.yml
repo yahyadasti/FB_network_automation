@@ -4,8 +4,8 @@
   gather_facts: no
   vars:
     ansible_user: admin
-    ansible_password: FutureBroadbandAS400497
-    ansible_ssh_pass: FutureBroadbandAS400497
+    ansible_password: F**********************
+    ansible_ssh_pass: F**********************
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
     default_system_cfg_path: /tmp/system.cfg  # Update this path as it is on the device
   
