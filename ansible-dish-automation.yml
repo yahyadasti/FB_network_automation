@@ -1,0 +1,69 @@
+---
+- name: SSH into Ubiquiti LiteBeam
+  hosts: litebeam_hosts
+  gather_facts: no
+  vars:
+    ansible_user: admin
+    ansible_password: F**********************
+    ansible_ssh_pass: F*********************
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    cpe_hostname: FirstName-LastName-CPE
+    UISP_Key: *********************
+    WIRELESS_SSID: FB
+  tasks:
+    - name: Modify the WPA Pre-Shared Key
+      raw: sed -i 's/^wpasupplicant.profile.1.network.1.psk=.*/wpasupplicant.profile.1.network.1.psk=******************/' /tmp/system.cfg
+    - name: Modify aaa.1.wpa.psk=
+      raw: sed -i 's|^aaa.1.wpa.psk=.*|aaa.1.wpa.psk=F****************|' /tmp/system.cfg
+    - name: Modify the UNMS key
+      raw: sed -i 's|^unms.uri=.*|unms.uri={{ UISP_Key }}|' /tmp/system.cfg
+    - name: Enable UNMS
+      raw: sed -i 's|^unms.status=.*|unms.status=enabled|' /tmp/system.cfg
+    - name: Change Radio Antenna Gain
+      raw: sed -i 's|^radio.1.antenna.gain=.*|radio.1.antenna.gain=23|' /tmp/system.cfg
+    - name: Change Radio TX Power
+      raw: sed -i 's|^radio.1.txpower=.*|radio.1.txpower=24|' /tmp/system.cfg
+    - name: Change CPE Hostname
+      raw: sed -i 's|^resolv.host.1.name=.*|resolv.host.1.name={{ cpe_hostname }}|' /tmp/system.cfg
+    - name: Set the SSID for the CPE to Connect To
+      raw: sed -i 's|^wireless.1.ssid=.*|wireless.1.ssid={{ WIRELESS_SSID }}|' /tmp/system.cfg
+    - name: Set the NTP server
+      raw: sed -i 's|^ntpclient.1.server=.*|ntpclient.1.server=0.ubnt.pool.ntp.org|' /tmp/system.cfg
+    - name: Enable ntpclient.1.status
+      raw: sed -i 's|^ntpclient.1.status=.*|ntpclient.1.status=enabled|' /tmp/system.cfg
+    - name: Enable ntpclient.status
+      raw: sed -i 's|^ntpclient.status=.*|ntpclient.status=enabled|' /tmp/system.cfg
+    - name: Verify changes in the configuration file
+      raw: grep -E 'wpasupplicant.profile.1.network.1.psk|aaa.1.wpa.psk|unms.uri|unms.status|radio.1.antenna.gain|radio.1.txpower|resolv.host.1.name|wireless.1.ssid|ntpclient.1.server|ntpclient.1.status|ntpclient.status' /tmp/system.cfg
+      register: verify_output
+
+    - name: Display verification output
+      debug:
+        msg: "{{ verify_output.stdout_lines }}"
+
+    - name: Check if /etc/persistent directory exists
+      raw: ls -ld /etc/persistent
+      register: dir_check
+      ignore_errors: yes
+
+    - name: Display directory check output
+      debug:
+        msg: "{{ dir_check.stdout_lines }}"
+
+    - name: Ensure /etc/persistent directory exists
+      raw: mkdir -p /etc/persistent
+      when: dir_check.rc != 0
+
+    - name: List contents of /etc to verify creation
+      raw: ls -l /etc
+      register: list_check
+
+    - name: Display list output
+      debug:
+        msg: "{{ list_check.stdout_lines }}"
+
+    - name: Save config
+      raw: cfgmtd -w -p /etc/persistent
+
+    - name: Reboot CPE
+      raw: reboot
