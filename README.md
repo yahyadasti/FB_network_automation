@@ -24,6 +24,12 @@ This repository showcases some of the work I completed during my internship at *
 - Developed an **Ansible playbook** to apply **traffic shaping rules** on LiteBeam CPEs.
 - Implemented **rate-limiting and burst control settings** to manage/(stop) bandwidth usage.
 
+## 📈 Product & Business Impact
+As a network engineer, I treated our internal infrastructure as a product. The "customers" were my fellow engineers, and their pain point was manual, error-prone device provisioning. 
+* **Reduced Friction:** By transitioning us to Infrastructure as Code (IaC) with Ansible, I eliminated manual SSH configurations.
+* **Operational Efficiency:** Automated MAC ACL management and CPE provisioning reduced deployment times by 40%.
+* **Scalability:** Implemented rate-limiting and burst control to ensure fair bandwidth distribution across the ISP's user base without requiring manual intervention.
+
 ## 🛠️ Skills & Technologies Used
 - **Ansible** for automation
 - **Linux-based networking**
@@ -36,3 +42,5 @@ This repository highlights my ability to **automate network configurations**, an
 
 ---
 ✅ **Feel free to explore the code and reach out for any questions!**
+
+
