@@ -1,6 +1,6 @@
 # OpSmart Internship Projects
 
-This repository showcases some of the work I completed during my internship at **FutureBroadband**, an ISP startup. The files included represent a portion of my contributions, focusing on **network automation, configuration management, and traffic shaping** for Ubiquiti LiteBeam devices.
+This repository showcases some of the work I completed during my internship at **FutureBroadband**, an ISP startup (under OpSmart). The files included represent a portion of my contributions, focusing on **network automation, configuration management, and traffic shaping** for Ubiquiti LiteBeam devices.
 
 ## 📌 Projects Included
 
